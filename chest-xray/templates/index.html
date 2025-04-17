@@ -1,0 +1,624 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Pneumonia Detection AI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        :root {
+            /* Light Theme */
+            --bg-gradient: linear-gradient(135deg, #e9f5f9, #c5eef5); /* Slightly softer gradient */
+            --container-bg: #ffffff;
+            --text-color: #343a40; /* Darker text */
+            --heading-color: #005f73;
+            --primary-btn-bg: #0077b6;
+            --primary-btn-hover-bg: #023e8a;
+            --secondary-btn-bg: #6c757d;
+            --secondary-btn-hover-bg: #5a6268;
+            --border-color: #dee2e6;
+            --shadow-color: rgba(0, 95, 115, 0.1); /* Themed shadow */
+            --result-normal-bg: #e0f2f7; /* Lighter theme color */
+            --result-normal-text: #005f73;
+            --result-normal-border: #b2ebf2;
+            --result-pneumonia-bg: #fceeee; /* Lighter theme color */
+            --result-pneumonia-text: #ae2012;
+            --result-pneumonia-border: #fbc4bc;
+            --flash-bg: #f8d7da;
+            --flash-text: #842029;
+            --flash-border: #f5c2c7;
+            --footer-text: #6c757d; /* Slightly darker */
+            --toggle-bg: #f8f9fa;
+            --toggle-icon: '🌙';
+            --toggle-shadow: rgba(0, 0, 0, 0.15);
+            --info-bg: #f8f9fa; /* Background for info section */
+        }
+
+        .dark-mode {
+            /* Dark Theme */
+            --bg-gradient: linear-gradient(135deg, #0b132b, #1c2541);
+            --container-bg: #252a30; /* Slightly adjusted dark */
+            --text-color: #e9ecef;
+            --heading-color: #90e0ef;
+            --primary-btn-bg: #00b4d8;
+            --primary-btn-hover-bg: #48cae4;
+            --secondary-btn-bg: #495057;
+            --secondary-btn-hover-bg: #5a6268;
+            --border-color: #495057;
+            --shadow-color: rgba(0, 180, 216, 0.1); /* Themed shadow */
+            --result-normal-bg: #1a4d2e; /* Darker theme color */
+            --result-normal-text: #a3cfbb;
+            --result-normal-border: #2f6b46;
+            --result-pneumonia-bg: #6a040f; /* Darker theme color */
+            --result-pneumonia-text: #f1aeb5;
+            --result-pneumonia-border: #a02d39;
+            --flash-bg: #58151c;
+            --flash-text: #f1aeb5;
+            --flash-border: #a02d39;
+            --footer-text: #adb5bd;
+            --toggle-bg: #343a40;
+            --toggle-icon: '☀️';
+            --toggle-shadow: rgba(255, 255, 255, 0.1);
+             --info-bg: #343a40; /* Background for info section */
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            background: var(--bg-gradient);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            transition: background 0.4s ease, color 0.4s ease; /* Smoother transition */
+            line-height: 1.7; /* Increased line height */
+        }
+
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: var(--toggle-bg);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.3rem;
+            cursor: pointer;
+            box-shadow: 0 3px 8px var(--toggle-shadow);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        .theme-toggle:hover {
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 5px 12px var(--toggle-shadow);
+        }
+        .theme-toggle::before {
+            content: var(--toggle-icon);
+        }
+
+        .container {
+            background-color: var(--container-bg);
+            padding: 40px 45px; /* Increased padding */
+            border-radius: 15px; /* More rounded */
+            box-shadow: 0 10px 30px var(--shadow-color); /* Softer, larger shadow */
+            text-align: center;
+            max-width: 600px; /* Slightly wider */
+            width: 100%;
+            transition: background-color 0.4s ease, box-shadow 0.4s ease;
+            margin-top: 70px; /* More space below toggle */
+            margin-bottom: 30px;
+        }
+
+        /* --- Enhanced Header --- */
+        .header-section {
+             margin-bottom: 30px; /* More space below header */
+        }
+        .header-section i { /* Icon next to title */
+            font-size: 2.2rem;
+            color: var(--primary-btn-bg);
+            margin-bottom: 10px;
+            display: block; /* Center icon above text */
+        }
+         .dark-mode .header-section i {
+            color: var(--primary-btn-bg); /* Keep it bright in dark mode */
+         }
+        h1 {
+            color: var(--heading-color);
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 2rem; /* Larger title */
+        }
+        .subtitle {
+            font-size: 1rem; /* Slightly larger */
+            color: var(--text-color);
+            opacity: 0.85;
+            margin-bottom: 0; /* Adjusted margin */
+            font-weight: 300;
+        }
+
+        form {
+            margin-bottom: 30px; /* Increased space */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Hide default file input */
+        input[type="file"] {
+            display: none;
+        }
+
+        /* --- Enhanced File Upload --- */
+        .file-upload-wrapper {
+             margin-bottom: 15px;
+             width: 100%; /* Center elements */
+             display: flex;
+             flex-direction: column;
+             align-items: center;
+        }
+        .custom-file-upload {
+            border: none;
+            display: inline-flex; /* Align icon and text */
+            align-items: center;
+            gap: 10px; /* Space between icon and text */
+            padding: 12px 28px; /* Adjust padding */
+            cursor: pointer;
+            background-color: var(--secondary-btn-bg);
+            color: white;
+            border-radius: 30px; /* More rounded */
+            font-weight: 500;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+            font-size: 1rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .custom-file-upload:hover {
+            background-color: var(--secondary-btn-hover-bg);
+            transform: translateY(-3px); /* More pronounced hover */
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        .custom-file-upload i {
+            font-size: 1.1em; /* Slightly larger icon */
+        }
+        #file-name-display {
+            font-size: 0.85rem;
+            color: var(--text-color);
+            opacity: 0.7;
+            margin-top: 10px;
+            min-height: 1.2em; /* Prevent layout shift */
+             font-style: italic;
+        }
+
+
+        /* --- Enhanced Image Preview --- */
+        #image-preview-container {
+            margin-top: 20px;
+            margin-bottom: 25px; /* Increased space */
+            min-height: 180px; /* Increased height */
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 2px dashed var(--border-color); /* Keep dashed, but use variable */
+            border-radius: 10px; /* More rounded */
+            padding: 15px;
+            background-color: rgba(0, 0, 0, 0.015); /* Very subtle background */
+            transition: border-color 0.3s ease, background-color 0.3s ease; /* Smooth transition */
+            overflow: hidden; /* Ensure image fits */
+        }
+        .dark-mode #image-preview-container {
+            background-color: rgba(255, 255, 255, 0.02);
+        }
+         #image-preview-container.has-image { /* Style when image is present */
+            border-style: solid;
+            border-color: var(--primary-btn-bg);
+            background-color: transparent;
+         }
+
+        #preview-img {
+            display: none; /* Hide initially */
+            max-width: 100%;
+            max-height: 350px; /* Limit preview height */
+            border-radius: 6px;
+            object-fit: contain;
+             opacity: 0; /* Start transparent for fade-in */
+             transition: opacity 0.5s ease; /* Fade-in transition */
+        }
+        #preview-img.visible {
+            opacity: 1; /* Make visible */
+        }
+
+        #preview-text {
+            color: var(--text-color);
+            opacity: 0.6;
+            font-size: 0.9rem;
+        }
+
+
+        /* --- Enhanced Submit Button --- */
+        button[type="submit"] {
+            background: var(--primary-btn-bg); /* Use gradient */
+            color: white;
+            padding: 14px 35px; /* Larger padding */
+            border: none;
+            border-radius: 30px; /* More rounded */
+            cursor: pointer;
+            font-size: 1.05rem; /* Slightly larger text */
+            font-weight: 500;
+            transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+            margin-top: 15px;
+            box-shadow: 0 3px 8px rgba(0, 119, 182, 0.3); /* Themed shadow */
+        }
+        button[type="submit"]:hover {
+            background: var(--primary-btn-hover-bg);
+            transform: translateY(-3px); /* More pronounced hover */
+            box-shadow: 0 5px 12px rgba(0, 119, 182, 0.4);
+        }
+         button[type="submit"]:disabled {
+            background-color: var(--secondary-btn-bg);
+            box-shadow: none;
+            cursor: not-allowed;
+            opacity: 0.7;
+            transform: translateY(0); /* Reset hover transform */
+        }
+         .dark-mode button[type="submit"] {
+             box-shadow: 0 3px 8px rgba(0, 180, 216, 0.3);
+         }
+         .dark-mode button[type="submit"]:hover {
+            box-shadow: 0 5px 12px rgba(0, 180, 216, 0.4);
+         }
+
+
+        /* --- Loading Spinner --- */
+        .loader {
+            display: none; /* Hidden by default */
+            border: 4px solid rgba(0,0,0,0.1);
+            border-left-color: var(--primary-btn-bg);
+            border-radius: 50%;
+            width: 30px; /* Slightly larger */
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto 0 auto; /* Increased margin */
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .dark-mode .loader {
+            border-left-color: var(--primary-btn-bg); /* Ensure bright color in dark mode */
+            border-right-color: transparent;
+            border-bottom-color: transparent;
+        }
+
+
+        /* --- Enhanced Prediction Result Card --- */
+        .prediction-area {
+             margin-top: 35px; /* More space above results */
+             width: 100%;
+             min-height: 80px; /* Placeholder height */
+             opacity: 0; /* Start hidden */
+             transform: translateY(10px); /* Start slightly lower */
+             transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+         .prediction-area.visible {
+             opacity: 1;
+             transform: translateY(0);
+         }
+        .result-card {
+            padding: 20px 25px; /* More padding */
+            border-radius: 10px; /* Match preview */
+            margin-bottom: 15px;
+            border: 1px solid; /* Use border-color defined below */
+            font-size: 1.1rem;
+            font-weight: 500;
+            text-align: left;
+            display: flex; /* Use flex for icon and text */
+            align-items: center;
+            gap: 15px; /* Space between icon and text */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+        .result-card i { /* Result icon */
+            font-size: 1.8em; /* Larger icon */
+            flex-shrink: 0; /* Prevent icon shrinking */
+        }
+        .result-card .result-content {
+             flex-grow: 1; /* Allow text content to take remaining space */
+        }
+        .result-card.normal {
+            background-color: var(--result-normal-bg);
+            color: var(--result-normal-text);
+            border-color: var(--result-normal-border);
+        }
+         .result-card.normal i {
+            color: var(--result-normal-text); /* Icon color matches text */
+         }
+        .result-card.pneumonia {
+            background-color: var(--result-pneumonia-bg);
+            color: var(--result-pneumonia-text);
+            border-color: var(--result-pneumonia-border);
+        }
+        .result-card.pneumonia i {
+            color: var(--result-pneumonia-text); /* Icon color matches text */
+        }
+        .result-card strong {
+            font-weight: 600;
+            display: block; /* Ensure prediction is on its own line */
+            margin-bottom: 3px;
+        }
+        .confidence {
+            display: block; /* New line */
+            font-size: 0.9em;
+            font-weight: 400;
+            opacity: 0.9;
+            margin-top: 5px;
+        }
+
+        /* --- Flash Messages --- */
+        .flash-message {
+            padding: 12px 18px;
+            margin-bottom: 20px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            width: 100%;
+            background-color: var(--flash-bg);
+            color: var(--flash-text);
+            border: 1px solid var(--flash-border);
+            text-align: left;
+            display: flex; /* Add icon capability */
+            align-items: center;
+            gap: 10px;
+        }
+         .flash-message::before { /* Add an icon */
+             font-family: "Font Awesome 6 Free";
+             font-weight: 900;
+             content: "\f071"; /* Exclamation triangle */
+         }
+
+
+        /* --- Informational Section --- */
+        .info-section {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: var(--info-bg);
+            border-radius: 8px;
+            text-align: left;
+            font-size: 0.85rem;
+            color: var(--text-color);
+            opacity: 0.8;
+            border: 1px solid var(--border-color);
+        }
+        .info-section h4 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            color: var(--heading-color);
+            font-weight: 500;
+        }
+        .info-section p {
+            margin-bottom: 5px;
+            line-height: 1.6;
+        }
+         .info-section strong {
+             font-weight: 500;
+             color: var(--primary-btn-bg);
+         }
+         .dark-mode .info-section strong {
+            color: var(--primary-btn-bg); /* Keep bright */
+         }
+
+        /* --- Footer --- */
+        footer {
+            text-align: center;
+            padding: 25px 10px; /* Increased padding */
+            font-size: 0.9rem; /* Slightly larger */
+            color: var(--footer-text);
+            width: 100%;
+            margin-top: auto;
+        }
+        footer a {
+            color: var(--primary-btn-bg);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+        footer a:hover {
+            color: var(--primary-btn-hover-bg);
+            text-decoration: underline;
+        }
+        .dark-mode footer a {
+            color: var(--primary-btn-bg); /* Use bright blue in dark mode */
+        }
+        .dark-mode footer a:hover {
+             color: var(--primary-btn-hover-bg);
+        }
+
+    </style>
+</head>
+<body>
+    <button id="theme-toggle" class="theme-toggle" title="Toggle theme"></button>
+
+    <div class="container">
+        <div class="header-section">
+             <i class="fa-solid fa-lungs-virus"></i> <h1>Pneumonia Detection AI</h1>
+            <p class="subtitle">Upload a chest X-ray image to detect signs of Pneumonia using DenseNet-121.</p> </div>
+
+
+        <div id="flash-messages">
+        {% with messages = get_flashed_messages(with_categories=true) %} {% if messages %}
+            {% for category, message in messages %}
+              <div class="flash-message {{ category }}">{{ message }}</div> {% endfor %}
+          {% endif %}
+        {% endwith %}
+        </div>
+
+        <form method="post" enctype="multipart/form-data" action="{{ url_for('predict') }}" id="predict-form">
+            <div class="file-upload-wrapper">
+                <label for="file-upload" class="custom-file-upload">
+                     <i class="fa-solid fa-upload"></i> Choose X-ray Image
+                </label>
+                <input id="file-upload" name="file" type="file" accept="image/png, image/jpeg, image/jpg" required>
+                <span id="file-name-display">No file selected</span> </div>
+
+            <div id="image-preview-container">
+                <span id="preview-text">Image preview will appear here</span>
+                <img id="preview-img" src="#" alt="Image Preview"/>
+            </div>
+
+            <button type="submit" id="submit-button">
+                 <i class="fa-solid fa-magnifying-glass-chart"></i> Analyze Image
+            </button>
+
+            <div class="loader" id="loader"></div>
+        </form>
+
+        <div class="prediction-area" id="prediction-area">
+        {% if prediction %}
+             <div class="result-card {{ prediction.lower() }}">
+                {% if prediction.lower() == 'pneumonia' %}
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                {% else %}
+                     <i class="fa-solid fa-circle-check"></i>
+                {% endif %}
+                 <div class="result-content">
+                    <strong>Prediction: {{ prediction }}</strong>
+                    {% if confidence %}
+                        <span class="confidence">Confidence: {{ confidence }}</span>
+                    {% endif %}
+                </div>
+            </div>
+        {% endif %}
+        </div>
+
+         <div class="info-section">
+             <h4>About This Tool</h4>
+             <p>This tool utilizes a <strong>DenseNet-121</strong> deep learning model trained on chest X-ray images to predict the likelihood of pneumonia.</p>
+             <p><strong>Disclaimer:</strong> This is for educational and demonstrational purposes only. It is <strong>not</strong> a substitute for professional medical diagnosis. Always consult a qualified healthcare provider for any health concerns.</p>
+         </div>
+
+    </div>
+
+    <footer>
+        <p>&copy; {{ current_year }} Pneumonia Detection AI. All Rights Reserved.</p> <p>Developed with <i class="fa-solid fa-heart" style="color: #ae2012;"></i> by <a href="#" target="_blank" rel="noopener noreferrer">SIDDHARTHA</a></p> </footer>
+
+    <script>
+        const themeToggle = document.getElementById('theme-toggle');
+        const fileUpload = document.getElementById('file-upload');
+        const previewContainer = document.getElementById('image-preview-container');
+        const previewImage = document.getElementById('preview-img');
+        const previewText = document.getElementById('preview-text');
+        const fileNameDisplay = document.getElementById('file-name-display'); // Get filename display span
+        const predictForm = document.getElementById('predict-form');
+        const submitButton = document.getElementById('submit-button');
+        const loader = document.getElementById('loader');
+        const predictionArea = document.getElementById('prediction-area'); // Use ID for easier selection
+        const flashMessagesContainer = document.getElementById('flash-messages');
+        const submitButtonOriginalText = '<i class="fa-solid fa-magnifying-glass-chart"></i> Analyze Image'; // Store original button text
+
+        // 1. Theme Toggle Functionality (Unchanged)
+        const currentTheme = localStorage.getItem('theme');
+        if (currentTheme === 'dark') {
+            document.body.classList.add('dark-mode');
+        }
+        themeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            let theme = document.body.classList.contains('dark-mode') ? 'dark' : 'light';
+            localStorage.setItem('theme', theme);
+        });
+
+        // 2. Image Preview & Filename Display Functionality
+        fileUpload.addEventListener('change', function(event) {
+            const file = event.target.files[0];
+
+            // Clear previous results/errors and hide loader when new file is selected
+            predictionArea.innerHTML = '';
+            predictionArea.classList.remove('visible'); // Hide result area
+            flashMessagesContainer.innerHTML = '';
+            loader.style.display = 'none';
+            submitButton.disabled = false;
+            submitButton.innerHTML = submitButtonOriginalText; // Reset button text
+
+            if (file) {
+                // Display filename
+                fileNameDisplay.textContent = file.name;
+
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        previewImage.src = e.target.result;
+                        previewImage.style.display = 'block';
+                        previewText.style.display = 'none';
+                        previewContainer.classList.add('has-image'); // Add class for styling
+                        // Trigger fade-in after display block
+                        setTimeout(() => { previewImage.classList.add('visible'); }, 10);
+                    }
+                    reader.readAsDataURL(file);
+                } else {
+                    // Invalid file type selected
+                    previewImage.src = '#';
+                    previewImage.style.display = 'none';
+                    previewImage.classList.remove('visible');
+                    previewText.style.display = 'block';
+                    previewContainer.classList.remove('has-image');
+                    fileNameDisplay.textContent = 'Invalid file type selected'; // Update status
+                     // Optionally show a flash message
+                    flashMessagesContainer.innerHTML = `<div class="flash-message error">Please select a valid image file (PNG, JPG, JPEG).</div>`;
+                }
+            } else {
+                 // No file selected (e.g., user clicked cancel)
+                previewImage.src = '#';
+                previewImage.style.display = 'none';
+                previewImage.classList.remove('visible');
+                previewText.style.display = 'block';
+                previewContainer.classList.remove('has-image');
+                fileNameDisplay.textContent = 'No file selected'; // Reset filename display
+            }
+        });
+
+        // 3. Form Submission: Show Loader & Disable Button
+        predictForm.addEventListener('submit', function(event) {
+            if (!fileUpload.files || fileUpload.files.length === 0 || !fileUpload.files[0].type.startsWith('image/')) {
+                 // Prevent submission if no file or invalid file is selected
+                 flashMessagesContainer.innerHTML = `<div class="flash-message error">Please select a valid image file first.</div>`;
+                 event.preventDefault();
+                 return;
+            }
+
+            loader.style.display = 'block';
+            submitButton.disabled = true;
+            submitButton.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Analyzing...'; // Change button text + icon
+            predictionArea.innerHTML = ''; // Clear previous prediction
+            predictionArea.classList.remove('visible'); // Hide result area
+            flashMessagesContainer.innerHTML = ''; // Clear flash messages
+        });
+
+        // 4. Show prediction result with animation when page loads (if prediction exists)
+         window.addEventListener('load', () => {
+             // Check if the prediction area has content generated by Flask
+             if (predictionArea.innerHTML.trim() !== '') {
+                loader.style.display = 'none'; // Ensure loader is hidden
+                submitButton.disabled = false; // Re-enable button
+                submitButton.innerHTML = submitButtonOriginalText; // Restore button text
+                // Make the prediction area visible with animation
+                setTimeout(() => { predictionArea.classList.add('visible'); }, 100); // Small delay for effect
+             } else {
+                // If no prediction on load, ensure button is in default state
+                submitButton.disabled = false;
+                submitButton.innerHTML = submitButtonOriginalText;
+             }
+         });
+
+    </script>
+</body>
+</html>
