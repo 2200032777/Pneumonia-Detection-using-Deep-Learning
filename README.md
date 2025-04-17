@@ -1,4 +1,4 @@
-# Pneumonia Detection from Chest X-rays using DenseNet121
+# Pneumonia Detection from Chest X-rays using DenseNet121(Pytorch)
 
 This project implements a deep learning model to classify chest X-ray images into 'NORMAL' or 'PNEUMONIA' categories. It utilizes a pre-trained DenseNet121 model, fine-tuned on the Chest X-Ray Images (Pneumonia) dataset.
 
