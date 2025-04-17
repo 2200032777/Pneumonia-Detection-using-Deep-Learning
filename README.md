@@ -44,11 +44,6 @@ This project uses the **Chest X-Ray Images (Pneumonia)** dataset, commonly found
 
 
 
-
-
-
-
-
 ##code
 
 model.py:-
