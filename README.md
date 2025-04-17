@@ -36,10 +36,22 @@ This project uses the **Chest X-Ray Images (Pneumonia)** dataset, commonly found
     ```
 * Update the `DATASET_PATH` variable in the script to point to your `<dataset_root_directory>`.
 
-## Project Structure
+
+![Screenshot (419)](https://github.com/user-attachments/assets/7e9b23c4-1c70-42fc-9b3d-3dcf7dac5d29)
+![Screenshot (420)](https://github.com/user-attachments/assets/27a555b0-1509-46cc-8bcb-56975ddcd36f)
+![Screenshot (421)](https://github.com/user-attachments/assets/6c7707c9-43f8-46ae-86c1-dec134e8331a)
+![Screenshot (422)](https://github.com/user-attachments/assets/629934f6-8fa7-4215-9df9-4cd8c5984ee1)
+
+
+
+
+
+
 
 
 ##code
+
+model.py:-
 
 import os
 import torch
